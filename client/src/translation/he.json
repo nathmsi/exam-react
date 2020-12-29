@@ -1,0 +1,21 @@
+{
+    "address": "כתובת",
+    "personale": "אישי",
+    "details": "פרטים",
+    "next": "הַבָּא",
+    "previous": "קודם",
+    "submit": "שלח",
+    "firstName": "שם פרטי",
+    "lastName": "שם משפחה",
+    "password": "סיסמא",
+    "country": "מדינה",
+    "city": "עיר",
+    "street": "רחוב",
+    "email": "אמיל",
+    "phone": "טלפון",
+    "gender": "זאות",
+    "married": "נשוי",
+    "M": "זכר",
+    "F": "נקבה",
+    "Customer details": "פרטי לקוח"
+}

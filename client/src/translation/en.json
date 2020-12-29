@@ -1,0 +1,21 @@
+{
+    "address": "Address",
+    "personale": "Personal",
+    "details": "Details",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "password": "Password",
+    "country": "Country",
+    "city": "City",
+    "street": "Street",
+    "email": "Email",
+    "phone": "Phone",
+    "gender": "Gender",
+    "married": "Married",
+    "M": "Male",
+    "F": "Femal",
+    "Customer details": "Customer details"
+}
