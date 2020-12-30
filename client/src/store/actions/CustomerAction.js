@@ -4,7 +4,10 @@ import {
     HANDLE_FIELD_VALUE_CHANGE,
     HANDLE_CHANGE_SELECTED_STEP,
     HANDLE_SUBMIT_FORM_RESPONSE,
-    HANDLE_SUBMIT_FORM_LOADING
+    HANDLE_SUBMIT_FORM_LOADING,
+
+    COUNTRY_GET_API_LOADING,
+    COUNTRY_GET_API_RESPONSE
 } from './types'
 
 
@@ -44,7 +47,6 @@ export const handleSubmitFormCustomer = (form) => {
             form.forEach(element => {
                 objToSend[element.field] = element.value
             });
-            console.log(objToSend)
             const response = await yelp.post('/customer/', {
                 ...objToSend
             });
@@ -64,7 +66,7 @@ export const handleSubmitFormCustomer = (form) => {
                     payload: {
                         loading: false,
                         success: false,
-                        message: 'error'
+                        message: 'error: failed to post customer details form'
                     }
                 })
             }
@@ -76,7 +78,49 @@ export const handleSubmitFormCustomer = (form) => {
                 payload: {
                     loading: false,
                     success: false,
-                    message: 'error'
+                    message: 'error: failed to post the form'
+                }
+            })
+        }
+    }
+}
+
+export const handleGetCountryFromAPI = () => {
+    return async (dispatch) => {
+        try {
+            dispatch({
+                type: COUNTRY_GET_API_LOADING,
+            });
+            const response = await yelp.get('/country/');
+            console.log(response.data);
+            if(response && response.data && response.data.success) {
+                dispatch({
+                    type: COUNTRY_GET_API_RESPONSE,
+                    payload: {
+                        loading: false,
+                        success: true,
+                        country: response.data.country
+                    }
+                })
+            } else {
+                dispatch({
+                    type: COUNTRY_GET_API_RESPONSE,
+                    payload: {
+                        loading: false,
+                        success: false,
+                        message: 'error: failed to get country details form'
+                    }
+                })
+            }
+        }
+        catch (error) {
+            console.log(error);
+            dispatch({
+                type: COUNTRY_GET_API_RESPONSE,
+                payload: {
+                    loading: false,
+                    success: false,
+                    message: 'error: failed to post the form'
                 }
             })
         }

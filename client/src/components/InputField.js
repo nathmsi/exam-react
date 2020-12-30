@@ -26,7 +26,7 @@ const InputField = (props) => {
             {
                 !isEnum && !isCheckbox ?
                     <div>
-                        <input className="form__field" type="input" id={field} value={value} onChange={(e) => handleChangeInput(e.target.value)} placeholder={field} />
+                        <input className="form__field" type={`${field === 'password' ? 'password' : 'input'}`} id={field} value={value} onChange={(e) => handleChangeInput(e.target.value)} placeholder={field} />
                         <label className="form__label">{t(field)}</label>
                     </div>
                     : null}

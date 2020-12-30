@@ -6,22 +6,20 @@ import Loading from '../components/Loading'
 import Modal from '../components/Modal'
 import SwitchLanguage from '../components/SwitchLanguage'
 import { withNamespaces } from 'react-i18next';
-
+import FooterForm from '../components/FooterForm'
 import {
     handleSelevtedStepIsChanged,
-    handleSubmitFormCustomer
+    handleSubmitFormCustomer,
+    handleGetCountryFromAPI
 } from '../store/actions'
 
-import yelp from '../api/yelp'
 
 export class MainScreen extends Component {
 
-    async componentDidMount() {
-        let response = await yelp.get('/customer');
-        console.log(response)
+    componentDidMount() {
+        this.props.handleGetCountryFromAPI && this.props.handleGetCountryFromAPI()
     }
-
-
+    
 
     handleSelevtedStepIsChanged(selectedStep) {
         if (this.isCurrentStepValid()) {
@@ -64,11 +62,15 @@ export class MainScreen extends Component {
                     <span className="FormTitle">{t('Customer details')}</span>
                     <HeaderForm />
                     <FormStep step={selectedStep} />
-                    <div className="formFooter">
-                        {selectedStep > 1 && <button className="buttonPrevious" onClick={() => this.handlePreviousStep(selectedStep - 1)}>Previous</button>}
-                        {selectedStep < this.props.stepElements.length && <button className={`${stepIsValidate ? '' : 'disabled'}`} onClick={() => this.handleSelevtedStepIsChanged(selectedStep + 1)}>Next</button>}
-                        {selectedStep === this.props.stepElements.length && <button className={`${allStepIsValidate ? '' : 'disabled'}`} onClick={() => this.handleSubmitForm()}>Submit</button>}
-                    </div>
+                    <FooterForm
+                        selectedStep={selectedStep}
+                        stepElements={this.props.stepElements}
+                        handlePreviousStep={(selectedStep) => this.handlePreviousStep(selectedStep)}
+                        handleSubmitForm={() => this.handleSubmitForm()}
+                        handleSelevtedStepIsChanged={(selectedStep) => this.handleSelevtedStepIsChanged(selectedStep)}
+                        allStepIsValidate={allStepIsValidate}
+                        stepIsValidate={stepIsValidate}
+                    />
                 </div>
             </div>
         )
@@ -85,7 +87,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
     handleSelevtedStepIsChanged,
-    handleSubmitFormCustomer
+    handleSubmitFormCustomer,
+    handleGetCountryFromAPI
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withNamespaces()(MainScreen))

@@ -2,22 +2,26 @@ import {
     HANDLE_FIELD_VALUE_CHANGE,
     HANDLE_SUBMIT_FORM_RESPONSE,
     HANDLE_SUBMIT_FORM_LOADING,
-    HANDLE_CHANGE_SELECTED_STEP
+    HANDLE_CHANGE_SELECTED_STEP,
+
+    COUNTRY_GET_API_RESPONSE,
+    COUNTRY_GET_API_LOADING
 } from '../actions/types'
 
+const DEFAULT_VALUE = ['france']
 
 const INITIAL_STATE = {
     form: [
         { field: 'firstName', value: '', required: true, step: 3, errorMessage: '' },
         { field: 'lastName', value: '', required: true, step: 3, errorMessage: '' },
         { field: 'password', value: '', required: true, step: 3, errorMessage: '' },
-        { field: 'country', value: '', required: true, step: 2, errorMessage: '' },
+        { field: 'country', value: 'france', required: true, step: 2, errorMessage: '', isEnum: true, data: DEFAULT_VALUE },
         { field: 'city', value: '', required: true, step: 2, errorMessage: '' },
         { field: 'street', value: '', required: true, step: 2, errorMessage: '' },
         { field: 'email', value: '', required: true, step: 1, errorMessage: '' },
         { field: 'phone', value: '', required: true, step: 1, errorMessage: '' },
         { field: 'gender', value: 'M', required: true, step: 1, errorMessage: '', isEnum: true, data: ['M', 'F'] },
-        { field: 'married', value: '', required: true, step: 1, errorMessage: '', isCheckBox: true },
+        { field: 'married', value: false, required: true, step: 1, errorMessage: '', isCheckBox: true },
     ],
     isValidateStep: {
         step1: false,
@@ -27,7 +31,7 @@ const INITIAL_STATE = {
     stepElements: [
         { step: 1, title: 'personale' },
         { step: 2, title: 'address' },
-        { step: 3, title: 'details' }
+        { step: 3, title: 'contactability' }
     ],
     apiResponse: {
         response: '',
@@ -35,7 +39,13 @@ const INITIAL_STATE = {
         loading: false,
         message: ''
     },
-    selectedStep: 1
+    selectedStep: 1,
+    apiResponseCountry: {
+        country: [],
+        success: false,
+        loading: false,
+        message: ''
+    }
 };
 
 
@@ -64,7 +74,7 @@ export default (state = INITIAL_STATE, action) => {
             )
             const isValidate = checkIfFormIsValidate(newForm)
             return {
-                ...state, fields: [...newForm], isValidateStep: Object.assign({}, isValidate)
+                ...state, form: [...newForm], isValidateStep: Object.assign({}, isValidate)
             }
         }
         case HANDLE_CHANGE_SELECTED_STEP:
@@ -89,6 +99,32 @@ export default (state = INITIAL_STATE, action) => {
                 }
             }
         }
+        case COUNTRY_GET_API_LOADING: {
+            const apiResponseCountry = state.apiResponseCountry
+            apiResponseCountry.loading = true
+            return {
+                ...state, apiResponseCountry: Object.assign({}, apiResponseCountry)
+            }
+        }
+        case COUNTRY_GET_API_RESPONSE: {
+            const apiResponseCountry = action.payload
+            const country = apiResponseCountry.country
+            const newForm = state.form
+            console.log(apiResponseCountry)
+            if (country) {
+                newForm.forEach(
+                    el => {
+                        if (el.field === 'country') {
+                            el.data = country.map(el => el.CountryName)
+                            el.value = el.data[0]
+                        }
+                    }
+                )
+            }
+            return {
+                ...state, apiResponseCountry
+            }
+        }
         default:
             return state;
     }
@@ -109,8 +145,10 @@ function checkIfFormIsValidate(fields) {
     const step1 = fields.filter(el => el.step === 1).every(val => val.value !== '')
     const step2 = fields.filter(el => el.step === 2).every(val => val.value !== '')
     const step3 = fields.filter(el => el.step === 3).every(val => val.value !== '')
+    const validEmail = fields.find(el => el.field === 'email') && validateEmail(fields.find(el => el.field === 'email').value)
+    const validPhone= fields.find(el => el.field === 'phone') && validatePhone(fields.find(el => el.field === 'phone').value)
     return {
-        step1,
+        step1: validEmail && validPhone && step1,
         step2,
         step3
     }
@@ -120,6 +158,13 @@ function resetForm(form) {
     form && form.forEach(
         el => {
             el.value = ''
+            el.errorMessage = ''
+            if (el.field === 'gender') {
+                el.value = 'M'
+            }
+            if (el.field === 'married') {
+                el.value = false
+            }
         }
     )
     return form

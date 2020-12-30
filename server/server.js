@@ -22,7 +22,7 @@ main.use('/api', api);
 
 
 // set port, listen for requests
-const PORT = 8080;
+const PORT = 8888;
 main.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });

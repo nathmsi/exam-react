@@ -11,6 +11,7 @@ function validateEmail(email) {
 
 
 const QUERY_ADD_CUSTOMER = `INSERT INTO customer (firstName, lastName, password, country, city, street, email, phone, gender, married) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+const QUERY_GET_CUSTOMERS = `SELECT * FROM customer`;
 
 
 module.exports.createCustomer = function (req, res) {
@@ -40,7 +41,6 @@ module.exports.createCustomer = function (req, res) {
                 country === '' ||
                 city === '' ||
                 street === '' ||
-                email === '' ||
                 phone === '' ||
                 gender === '' ||
                 married === undefined  // is boolean
@@ -50,18 +50,6 @@ module.exports.createCustomer = function (req, res) {
                     message: `Error was found all inputs is required`
                 });
             } else {
-                const customer = [
-                    firstName,
-                    lastName,
-                    password,
-                    country,
-                    city,
-                    street,
-                    email,
-                    phone,
-                    gender,
-                    married
-                ]
                 bcrypt.hash(password, 10, function (err, hash) { // hash the password
                     if (err) {
                         res.status(200).json({
@@ -70,8 +58,20 @@ module.exports.createCustomer = function (req, res) {
                         });
                     }
                     // insert into table customer with password hashed
+                    const customer = [
+                        firstName,
+                        lastName,
+                        hash,
+                        country,
+                        city,
+                        street,
+                        email,
+                        phone,
+                        gender,
+                        married
+                    ]
                     db.run(QUERY_ADD_CUSTOMER, [
-                        ...customer
+                        ...customer,
                     ],
                         (error, rows) => {
                             if (error) {
@@ -90,7 +90,7 @@ module.exports.createCustomer = function (req, res) {
                                             customer: req.body
                                         });
                                     }
-                                ,1000)
+                                ,1500)
                             }
                         });
                 });
@@ -103,3 +103,26 @@ module.exports.createCustomer = function (req, res) {
         });
     }
 };
+
+
+module.exports.getCustomers = function (req, res) {
+    try {
+        db.all(QUERY_GET_CUSTOMERS , [], (err, rows) => { 
+            if (err) {
+                res.status(200).json({
+                    success: false,
+                    message: `error get list customers`
+                });
+            }
+            res.status(200).json({
+                success: true,
+                customers: rows
+            });
+        });
+    } catch (error) {
+        res.status(200).json({
+            success: false,
+            message: `error get list customers`
+        });
+    }
+}
