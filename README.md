@@ -6,4 +6,4 @@ npm install
 npm start
 ```
 
-The React application will run on port 8081
+The React application will run on port 8080
